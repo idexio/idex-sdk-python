@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Union, cast
+from typing import Callable, Dict, Union, cast, Any
 
 from idex_sdk_python.idex_types.websocket.request import (
     WebSocketRequestSubscribeShortNames,
@@ -135,52 +135,56 @@ def transform_balances_mesg(balance: WebSocketResponseBalanceShort) -> WebSocket
 def transform_order_fill(
     fill: WebSocketResponseOrderFillShort,
 ) -> WebSocketResponseOrderFillLong:
-    return {
-        "type": fill["y"],
-        "fillId": fill["i"],
-        "price": fill["p"],
-        "quantity": fill["q"],
-        "quoteQuantity": fill["Q"],
-        "orderBookQuantity": fill["oq"],
-        "orderBookQuoteQuantity": fill["oQ"],
-        "poolQuantity": fill["pq"],
-        "poolQuoteQuantity": fill["pQ"],
-        "time": fill["t"],
-        "makerSide": fill["s"],
-        "sequence": fill["u"],
-        "fee": fill["f"],
-        "feeAsset": fill["a"],
-        "gas": fill["g"],
-        "liquidity": fill["l"],
-        "txId": fill["T"],
-        "txStatus": fill["S"],
+    res_long = {
+        "type": fill.get("y"),
+        "fillId": fill.get("i"),
+        "price": fill.get("p"),
+        "quantity": fill.get("q"),
+        "quoteQuantity": fill.get("Q"),
+        "orderBookQuantity": fill.get("oq"),
+        "orderBookQuoteQuantity": fill.get("oQ"),
+        "poolQuantity": fill.get("pq"),
+        "poolQuoteQuantity": fill.get("pQ"),
+        "time": fill.get("t"),
+        "makerSide": fill.get("s"),
+        "sequence": fill.get("u"),
+        "fee": fill.get("f"),
+        "feeAsset": fill.get("a"),
+        "gas": fill.get("g"),
+        "liquidity": fill.get("l"),
+        "txId": fill.get("T"),
+        "txStatus": fill.get("S"),
     }
+    return cast(
+        WebSocketResponseOrderFillLong, {k: v for k, v in res_long.items() if v is not None}
+    )
 
 
 def transform_orders_mesg(order: WebSocketResponseOrderShort) -> WebSocketResponseOrderLong:
-    return {
-        "market": order["m"],
-        "orderId": order["i"],
-        "clientOrderId": order["c"],
-        "wallet": order["w"],
-        "executionTime": order["t"],
-        "time": order["T"],
-        "update": order["x"],
-        "status": order["X"],
-        "sequence": order["u"],
-        "type": order["o"],
-        "side": order["S"],
-        "originalQuantity": order["q"],
-        "originalQuoteQuantity": order["Q"],
-        "executedQuantity": order["z"],
-        "cumulativeQuoteQuantity": order["Z"],
-        "avgExecutionPrice": order["v"],
-        "price": order["p"],
-        "stopPrice": order["P"],
-        "timeInForce": order["f"],
-        "selfTradePrevention": order["V"],
-        "fills": list(map(transform_order_fill, order["F"])),
+    res_long = {
+        "market": order.get("m"),
+        "orderId": order.get("i"),
+        "clientOrderId": order.get("c"),
+        "wallet": order.get("w"),
+        "executionTime": order.get("t"),
+        "time": order.get("T"),
+        "update": order.get("x"),
+        "status": order.get("X"),
+        "sequence": order.get("u"),
+        "type": order.get("o"),
+        "side": order.get("S"),
+        "originalQuantity": order.get("q"),
+        "originalQuoteQuantity": order.get("Q"),
+        "executedQuantity": order.get("z"),
+        "cumulativeQuoteQuantity": order.get("Z"),
+        "avgExecutionPrice": order.get("v"),
+        "price": order.get("p"),
+        "stopPrice": order.get("P"),
+        "timeInForce": order.get("f"),
+        "selfTradePrevention": order.get("V"),
+        "fills": list(map(transform_order_fill, order["F"])) if "F" in order else None,
     }
+    return cast(WebSocketResponseOrderLong, {k: v for k, v in res_long.items() if v is not None})
 
 
 def transform_tokenprice_mesg(
@@ -192,7 +196,7 @@ def transform_tokenprice_mesg(
     }
 
 
-MESG_DATA_TRANSFORM_FUNCS: Dict[WebSocketRequestSubscribeShortNames, Callable] = {
+MESG_DATA_TRANSFORM_FUNCS: Dict[WebSocketRequestSubscribeShortNames, Callable[[Any], Any]] = {
     "tickers": transform_tickers_mesg,
     "candles": transform_candles_mesg,
     "trades": transform_trades_mesg,
