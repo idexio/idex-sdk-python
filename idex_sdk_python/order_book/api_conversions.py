@@ -1,5 +1,5 @@
 import math
-from typing import List, Optional, Union
+from typing import List, Optional, Union, cast
 
 from idex_sdk_python.idex_types.order_book import (
     L1OrderBook,
@@ -50,11 +50,13 @@ def l1_order_book_to_rest_response(l1: L1OrderBook) -> RestResponseOrderBook:
 def order_book_level_to_response_level(
     order_book_level: Union[OrderBookLevelL1, OrderBookLevelL2],
 ) -> RestResponseOrderBookPriceLevel:
-    return (
+    level: RestResponseOrderBookPriceLevel = (
         pip_to_decimal(order_book_level["price"]),
         pip_to_decimal(order_book_level["size"]),
         order_book_level["num_orders"],
     )
+    # We want to display as a list, but keep the type checking as a tuple for safety
+    return cast(RestResponseOrderBookPriceLevel, list(level))
 
 
 def l2_order_book_to_rest_response(l2: L2OrderBook, limit: int = 1000) -> RestResponseOrderBook:
