@@ -173,8 +173,10 @@ class OrderBookRealTimeClient(AsyncIOEventEmitter):
 
     def get_hybrid_books(self, market: str, tick_size: Optional[int] = None) -> L1AndL2OrderBook:
         applied_tick_size = tick_size or self.tick_sizes_by_market[market] or 1
+        input_book = self.load_level2(market)
+        aggregated_l2_book = aggregate_l2_order_book_at_tick_size(input_book, applied_tick_size)
         return l2_limit_order_book_to_hybrid_order_books(
-            aggregate_l2_order_book_at_tick_size(self.load_level2(market), applied_tick_size),
+            aggregated_l2_book,
             self.taker_idex_fee_rate,
             self.taker_liquidity_provider_fee_rate,
             True,
@@ -281,9 +283,10 @@ class OrderBookRealTimeClient(AsyncIOEventEmitter):
                 await asyncio.sleep(backoff_seconds)
 
     def load_level2(self, market: str) -> L2OrderBook:
-        return self.l2_order_books.get(market) or response_to_l2_order_book(
-            self.rest_public_client.get_order_book_level2(market, 1000, True),
-        )
+        if self.l2_order_books.get(market):
+            return self.l2_order_books[market]
+        book = self.rest_public_client.get_order_book_level2(market, 1000, True)
+        return response_to_l2_order_book(book)
 
     async def load_token_prices(self) -> None:
         assets = self.rest_public_client.get_assets()

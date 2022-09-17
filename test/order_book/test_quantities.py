@@ -1,12 +1,15 @@
-from decimal import ROUND_DOWN, ROUND_HALF_UP, ROUND_UP
 import unittest
+from decimal import ROUND_DOWN, ROUND_HALF_UP, ROUND_UP
+from typing import List
 
-from idex_sdk_python.idex_types.order_book import L2OrderBook
+from idex_sdk_python.idex_types.order_book import L2OrderBook, OrderBookLevelL2
 from idex_sdk_python.order_book import quantities as q
 from idex_sdk_python.pipmath import ONE_IN_PIPS
 
 
 class TestOrderBookQuantities(unittest.TestCase):
+    maxDiff = None
+
     def test_adjust_price_to_tick_size(self) -> None:
         self.assertEqual(q.adjust_price_to_tick_size(1000000005, 1), 1000000005)
         self.assertEqual(q.adjust_price_to_tick_size(1000000005, 10), 1000000010)
@@ -71,9 +74,9 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_gross_quote_quantity(self) -> None:
         self.assertEqual(
             q.calculate_gross_quote_quantity(
-                1000 * ONE_IN_PIPS,
-                2000 * ONE_IN_PIPS,
-                3 * ONE_IN_PIPS,
+                int(1000 * ONE_IN_PIPS),
+                int(2000 * ONE_IN_PIPS),
+                int(3 * ONE_IN_PIPS),
                 10,
                 15,
             ),
@@ -81,9 +84,9 @@ class TestOrderBookQuantities(unittest.TestCase):
         )
         self.assertEqual(
             q.calculate_gross_quote_quantity(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                2 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(2 * ONE_IN_PIPS),
                 100,
                 150,
             ),
@@ -93,33 +96,39 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_gross_base_value_of_buy_quantities(self) -> None:
         self.assertEqual(
             q.calculate_gross_base_value_of_buy_quantities(
-                1000 * ONE_IN_PIPS, 2000 * ONE_IN_PIPS, 100
+                int(1000 * ONE_IN_PIPS), int(2000 * ONE_IN_PIPS), 100
             ),
             50,
         )
         self.assertEqual(
             q.calculate_gross_base_value_of_buy_quantities(
-                5000 * ONE_IN_PIPS, 6000 * ONE_IN_PIPS, 123
+                int(5000 * ONE_IN_PIPS), int(6000 * ONE_IN_PIPS), 123
             ),
             103,
+        )
+        self.assertEqual(
+            q.calculate_gross_base_value_of_buy_quantities(
+                449805511517087, 28941050006305, 1970218377
+            ),
+            30619302271,
         )
 
     def test_quantities_available_from_pool_at_ask_price(self) -> None:
         self.assertEqual(
             q.quantities_available_from_pool_at_ask_price(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                2 * ONE_IN_PIPS,
-                10,
-                15,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(2 * ONE_IN_PIPS),
+                int(10),
+                int(15),
             ),
             {"gross_base": 112701680657, "gross_quote": 174596699795},
         )
         self.assertEqual(
             q.quantities_available_from_pool_at_ask_price(
-                1100 * ONE_IN_PIPS,
-                700 * ONE_IN_PIPS,
-                2 * ONE_IN_PIPS,
+                int(1100 * ONE_IN_PIPS),
+                int(700 * ONE_IN_PIPS),
+                int(2 * ONE_IN_PIPS),
                 12,
                 13,
             ),
@@ -129,9 +138,9 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_gross_base_quantity(self) -> None:
         self.assertEqual(
             q.calculate_gross_base_quantity(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                1 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(1 * ONE_IN_PIPS),
                 10,
                 15,
             ),
@@ -139,9 +148,9 @@ class TestOrderBookQuantities(unittest.TestCase):
         )
         self.assertEqual(
             q.calculate_gross_base_quantity(
-                1100 * ONE_IN_PIPS,
-                7000 * ONE_IN_PIPS,
-                2 * ONE_IN_PIPS,
+                int(1100 * ONE_IN_PIPS),
+                int(7000 * ONE_IN_PIPS),
+                int(2 * ONE_IN_PIPS),
                 12,
                 13,
             ),
@@ -151,9 +160,9 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_quantities_available_from_pool_at_bid_price(self) -> None:
         self.assertEqual(
             q.quantities_available_from_pool_at_bid_price(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                1 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(1 * ONE_IN_PIPS),
                 10,
                 15,
             ),
@@ -161,9 +170,9 @@ class TestOrderBookQuantities(unittest.TestCase):
         )
         self.assertEqual(
             q.quantities_available_from_pool_at_bid_price(
-                1100 * ONE_IN_PIPS,
-                7000 * ONE_IN_PIPS,
-                2 * ONE_IN_PIPS,
+                int(1100 * ONE_IN_PIPS),
+                int(7000 * ONE_IN_PIPS),
+                int(2 * ONE_IN_PIPS),
                 12,
                 13,
             ),
@@ -173,8 +182,8 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_synthetic_price_levels(self) -> None:
         self.assertEqual(
             q.calculate_synthetic_price_levels(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
                 3,
                 100,
                 10,
@@ -281,9 +290,9 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_base_quantity_out(self) -> None:
         self.assertEqual(
             q.calculate_base_quantity_out(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                200 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(200 * ONE_IN_PIPS),
                 10,
                 15,
             ),
@@ -293,9 +302,9 @@ class TestOrderBookQuantities(unittest.TestCase):
     def test_calculate_quote_quantity_out(self) -> None:
         self.assertEqual(
             q.calculate_quote_quantity_out(
-                5000 * ONE_IN_PIPS,
-                6000 * ONE_IN_PIPS,
-                200 * ONE_IN_PIPS,
+                int(5000 * ONE_IN_PIPS),
+                int(6000 * ONE_IN_PIPS),
+                int(200 * ONE_IN_PIPS),
                 10,
                 15,
             ),
@@ -306,13 +315,13 @@ class TestOrderBookQuantities(unittest.TestCase):
         self.assertEqual(
             q.l1_or_l2_best_available_prices(
                 {
-                    "base_reserve_quantity": 5000 * ONE_IN_PIPS,
-                    "quote_reserve_quantity": 6000 * ONE_IN_PIPS,
+                    "base_reserve_quantity": int(5000 * ONE_IN_PIPS),
+                    "quote_reserve_quantity": int(6000 * ONE_IN_PIPS),
                 },
                 10,
                 15,
-                200 * ONE_IN_PIPS,
-                250 * ONE_IN_PIPS,
+                int(200 * ONE_IN_PIPS),
+                int(250 * ONE_IN_PIPS),
                 1,
             ),
             {"buy_price": 130208331, "sell_price": 110946747},
@@ -340,7 +349,7 @@ class TestOrderBookQuantities(unittest.TestCase):
             orderbook,
             10,
             15,
-            200 * ONE_IN_PIPS,
+            int(200 * ONE_IN_PIPS),
             1,
         )
 
@@ -376,8 +385,134 @@ class TestOrderBookQuantities(unittest.TestCase):
             },
         )
 
-    def test_sort_and_merge_levels_unadjusted(self) -> None:
-        pass
-
     def test_aggregate_l2_order_book_at_tick_size(self) -> None:
-        pass
+        input_book: L2OrderBook = {
+            "sequence": 1130790,
+            "asks": [
+                {"price": 6913000, "size": 521801431648, "num_orders": 1, "type": "limit"},
+                {"price": 7231000, "size": 25519896132, "num_orders": 1, "type": "limit"},
+                {"price": 7950000, "size": 207668294256, "num_orders": 1, "type": "limit"},
+                {"price": 8200000, "size": 113300000000, "num_orders": 1, "type": "limit"},
+                {"price": 8350000, "size": 66000000000, "num_orders": 1, "type": "limit"},
+                {"price": 9000000, "size": 213865083350, "num_orders": 1, "type": "limit"},
+                {"price": 9300000, "size": 187622858589, "num_orders": 1, "type": "limit"},
+                {"price": 9400000, "size": 136857165273, "num_orders": 1, "type": "limit"},
+                {"price": 9600000, "size": 320797627929, "num_orders": 1, "type": "limit"},
+                {"price": 9758000, "size": 5969600000000, "num_orders": 1, "type": "limit"},
+                {"price": 9975000, "size": 202396588079, "num_orders": 1, "type": "limit"},
+                {"price": 10000000, "size": 82391006332, "num_orders": 2, "type": "limit"},
+                {"price": 10400000, "size": 320797627929, "num_orders": 1, "type": "limit"},
+                {"price": 10900000, "size": 199999999858, "num_orders": 1, "type": "limit"},
+                {"price": 11000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 11400000, "size": 299999999673, "num_orders": 1, "type": "limit"},
+                {"price": 11500000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 11613000, "size": 955692792178, "num_orders": 1, "type": "limit"},
+                {"price": 11980000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 12000000, "size": 651946634416, "num_orders": 4, "type": "limit"},
+                {"price": 12900000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13300000, "size": 40000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13900000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 14000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+            ],
+            "bids": [
+                {"price": 6500000, "size": 43416670784, "num_orders": 1, "type": "limit"},
+                {"price": 6250000, "size": 125000000000, "num_orders": 1, "type": "limit"},
+                {"price": 6137000, "size": 44936452305, "num_orders": 1, "type": "limit"},
+                {"price": 6010000, "size": 64034347038, "num_orders": 1, "type": "limit"},
+                {"price": 5700000, "size": 106114304122, "num_orders": 1, "type": "limit"},
+                {"price": 5000000, "size": 1500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 4501000, "size": 928895228015, "num_orders": 1, "type": "limit"},
+                {"price": 4490000, "size": 291024042249, "num_orders": 1, "type": "limit"},
+            ],
+            "pool": {
+                "base_reserve_quantity": 438288783017306,
+                "quote_reserve_quantity": 28913911015651,
+            },
+        }
+
+        correct_result = {
+            "asks": [
+                {"price": 6913000, "size": 521801431648, "num_orders": 1, "type": "limit"},
+                {"price": 7231000, "size": 25519896132, "num_orders": 1, "type": "limit"},
+                {"price": 7950000, "size": 207668294256, "num_orders": 1, "type": "limit"},
+                {"price": 8200000, "size": 113300000000, "num_orders": 1, "type": "limit"},
+                {"price": 8350000, "size": 66000000000, "num_orders": 1, "type": "limit"},
+                {"price": 9000000, "size": 213865083350, "num_orders": 1, "type": "limit"},
+                {"price": 9300000, "size": 187622858589, "num_orders": 1, "type": "limit"},
+                {"price": 9400000, "size": 136857165273, "num_orders": 1, "type": "limit"},
+                {"price": 9600000, "size": 320797627929, "num_orders": 1, "type": "limit"},
+                {"price": 9758000, "size": 5969600000000, "num_orders": 1, "type": "limit"},
+                {"price": 9975000, "size": 202396588079, "num_orders": 1, "type": "limit"},
+                {"price": 10000000, "size": 82391006332, "num_orders": 2, "type": "limit"},
+                {"price": 10400000, "size": 320797627929, "num_orders": 1, "type": "limit"},
+                {"price": 10900000, "size": 199999999858, "num_orders": 1, "type": "limit"},
+                {"price": 11000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 11400000, "size": 299999999673, "num_orders": 1, "type": "limit"},
+                {"price": 11500000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 11613000, "size": 955692792178, "num_orders": 1, "type": "limit"},
+                {"price": 11980000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 12000000, "size": 651946634416, "num_orders": 4, "type": "limit"},
+                {"price": 12900000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13300000, "size": 40000000000, "num_orders": 1, "type": "limit"},
+                {"price": 13900000, "size": 200000000000, "num_orders": 1, "type": "limit"},
+                {"price": 14000000, "size": 500000000000, "num_orders": 1, "type": "limit"},
+            ],
+            "bids": [
+                {"price": 6500000, "size": 43416670784, "num_orders": 1, "type": "limit"},
+                {"price": 6250000, "size": 125000000000, "num_orders": 1, "type": "limit"},
+                {"price": 6137000, "size": 44936452305, "num_orders": 1, "type": "limit"},
+                {"price": 6010000, "size": 64034347038, "num_orders": 1, "type": "limit"},
+                {"price": 5700000, "size": 106114304122, "num_orders": 1, "type": "limit"},
+                {"price": 5000000, "size": 1500000000000, "num_orders": 1, "type": "limit"},
+                {"price": 4501000, "size": 928895228015, "num_orders": 1, "type": "limit"},
+                {"price": 4490000, "size": 291024042249, "num_orders": 1, "type": "limit"},
+            ],
+            "sequence": 1130790,
+            "pool": {
+                "base_reserve_quantity": 438288783017306,
+                "quote_reserve_quantity": 28913911015651,
+            },
+        }
+        result = q.aggregate_l2_order_book_at_tick_size(input_book, 1000)
+        self.assertEqual(result, correct_result)
+
+    def test_sort_and_merge_levels_unadjusted(self) -> None:
+        limit_order_levels: List[OrderBookLevelL2] = [
+            {"price": 6913000, "size": 521801431648, "num_orders": 1, "type": "limit"},
+            {"price": 7231000, "size": 25519896132, "num_orders": 1, "type": "limit"},
+        ]
+        synthetic_levels: List[OrderBookLevelL2] = [
+            {"price": 6905000, "size": 217625260812, "num_orders": 0, "type": "pool"},
+            {"price": 6912000, "size": 217294259804, "num_orders": 0, "type": "pool"},
+            {"price": 6913000, "size": 217101431648, "num_orders": 0, "type": "pool"},
+            {"price": 6919000, "size": 216964096782, "num_orders": 0, "type": "pool"},
+            {"price": 6926000, "size": 216634768928, "num_orders": 0, "type": "pool"},
+            {"price": 7220000, "size": 203519707432, "num_orders": 0, "type": "pool"},
+            {"price": 7227000, "size": 203223662176, "num_orders": 0, "type": "pool"},
+            {"price": 7231000, "size": 203028333849, "num_orders": 0, "type": "pool"},
+            {"price": 7234000, "size": 202928333849, "num_orders": 0, "type": "pool"},
+            {"price": 7241000, "size": 202633720022, "num_orders": 0, "type": "pool"},
+        ]
+        is_before = lambda a, b: a["price"] <= b["price"]
+        result = q.sort_and_merge_levels_unadjusted(limit_order_levels, synthetic_levels, is_before)
+        self.assertEqual(
+            result,
+            [
+                {"price": 6905000, "size": 217625260812, "num_orders": 0, "type": "pool"},
+                {"price": 6912000, "size": 217294259804, "num_orders": 0, "type": "pool"},
+                {"price": 6913000, "size": 521801431648, "num_orders": 1, "type": "limit"},
+                {"price": 6919000, "size": 216964096782, "num_orders": 0, "type": "pool"},
+                {"price": 6926000, "size": 216634768928, "num_orders": 0, "type": "pool"},
+                {"price": 7220000, "size": 203519707432, "num_orders": 0, "type": "pool"},
+                {"price": 7227000, "size": 203223662176, "num_orders": 0, "type": "pool"},
+                {"price": 7231000, "size": 25519896132, "num_orders": 1, "type": "limit"},
+                {"price": 7234000, "size": 202928333849, "num_orders": 0, "type": "pool"},
+                {"price": 7241000, "size": 202633720022, "num_orders": 0, "type": "pool"},
+            ],
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

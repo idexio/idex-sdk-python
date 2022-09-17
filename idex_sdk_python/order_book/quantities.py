@@ -48,14 +48,17 @@ def calculate_gross_base_quantity(
         base_asset_quantity, quote_asset_quantity, target_price, False
     )
 
-    pool_fee = ONE_IN_PIPS - int((ONE_IN_PIPS * pool_fee_rate) / (ONE_IN_PIPS - idex_fee_rate))
-    v0 = pool_fee * base_asset_quantity + ONE_IN_PIPS * base_asset_quantity
-    v1 = base_asset_quantity * base_asset_quantity - int(
+    pool_fee: Decimal = ONE_IN_PIPS - int(
+        (ONE_IN_PIPS * pool_fee_rate) / (ONE_IN_PIPS - idex_fee_rate)
+    )
+    v0: Decimal = pool_fee * base_asset_quantity + ONE_IN_PIPS * base_asset_quantity
+    v1: Decimal = Decimal(base_asset_quantity) * Decimal(base_asset_quantity) - int(
         (ONE_IN_PIPS * base_asset_quantity * quote_asset_quantity) / target_price
     )
-    numerator = square_root_big_int(v0 * v0 - 4 * pool_fee * v1 * ONE_IN_PIPS) - v0
-    denominator = 2 * pool_fee * (ONE_IN_PIPS - idex_fee_rate)
-    return int(numerator * ONE_IN_PIPS / denominator)
+    numerator: Decimal = square_root_big_int(v0 * v0 - 4 * pool_fee * v1 * ONE_IN_PIPS) - v0
+    denominator: Decimal = 2 * pool_fee * (ONE_IN_PIPS - idex_fee_rate)
+    result = int(numerator * ONE_IN_PIPS / denominator)
+    return result
 
 
 def calculate_gross_base_value_of_buy_quantities(
@@ -67,9 +70,11 @@ def calculate_gross_base_value_of_buy_quantities(
     Helper function to convert from quote to base quantities.
     See quantities_available_from_pool_at_ask_price.
     """
-    return base_asset_quantity - int(
-        (base_asset_quantity * quote_asset_quantity) / (quote_asset_quantity + gross_quote_quantity)
+    result = base_asset_quantity - int(
+        (Decimal(base_asset_quantity) * Decimal(quote_asset_quantity))
+        / Decimal(quote_asset_quantity + gross_quote_quantity)
     )
+    return result
 
 
 def calculate_gross_quote_quantity(
@@ -87,15 +92,19 @@ def calculate_gross_quote_quantity(
         base_asset_quantity, quote_asset_quantity, target_price, True
     )
 
-    pool_fee = ONE_IN_PIPS - int((ONE_IN_PIPS * pool_fee_rate) / (ONE_IN_PIPS - idex_fee_rate))
-    v0 = ONE_IN_PIPS * quote_asset_quantity * (pool_fee + ONE_IN_PIPS)
-    v1 = quote_asset_quantity**2 * (pool_fee**2 + 2 * pool_fee * ONE_IN_PIPS + ONE_IN_PIPS**2)
-    v2 = quote_asset_quantity * (
+    pool_fee: Decimal = ONE_IN_PIPS - int(
+        (ONE_IN_PIPS * pool_fee_rate) / (ONE_IN_PIPS - idex_fee_rate)
+    )
+    v0: Decimal = ONE_IN_PIPS * quote_asset_quantity * (pool_fee + ONE_IN_PIPS)
+    v1: Decimal = quote_asset_quantity**2 * (
+        pool_fee**2 + 2 * pool_fee * ONE_IN_PIPS + ONE_IN_PIPS**2
+    )
+    v2: Decimal = quote_asset_quantity * (
         ONE_IN_PIPS * quote_asset_quantity - base_asset_quantity * target_price
     )
 
-    numerator = square_root_big_int((v1 - 4 * pool_fee * v2) * ONE_IN_PIPS**2) - v0
-    denominator = 2 * pool_fee * ONE_IN_PIPS - 2 * pool_fee * idex_fee_rate
+    numerator: Decimal = square_root_big_int((v1 - 4 * pool_fee * v2) * ONE_IN_PIPS**2) - v0
+    denominator: Decimal = 2 * pool_fee * ONE_IN_PIPS - 2 * pool_fee * idex_fee_rate
     return int(numerator / denominator)
 
 
@@ -109,7 +118,8 @@ def calculate_gross_quote_value_of_sell_quantities(
     See quantities_available_from_pool_at_bid_price.
     """
     return quote_asset_quantity - int(
-        (base_asset_quantity * quote_asset_quantity) / (base_asset_quantity + gross_base_quantity)
+        (Decimal(base_asset_quantity) * Decimal(quote_asset_quantity))
+        / Decimal(base_asset_quantity + gross_base_quantity)
     )
 
 
@@ -127,8 +137,8 @@ def calculate_base_quantity_out(
     if not quote_asset_quantity or not gross_quote_quantity_in:
         return 0
 
-    numerator = base_asset_quantity * quote_asset_quantity * ONE_IN_PIPS
-    denominator = quote_asset_quantity * ONE_IN_PIPS + gross_quote_quantity_in * (
+    numerator: Decimal = base_asset_quantity * quote_asset_quantity * ONE_IN_PIPS
+    denominator: Decimal = quote_asset_quantity * ONE_IN_PIPS + gross_quote_quantity_in * (
         ONE_IN_PIPS - idex_fee_rate - pool_fee_rate
     )
 
@@ -155,8 +165,8 @@ def calculate_quote_quantity_out(
     if not base_asset_quantity or not gross_base_quantity_in:
         return 0
 
-    numerator = base_asset_quantity * quote_asset_quantity * ONE_IN_PIPS
-    denominator = base_asset_quantity * ONE_IN_PIPS + gross_base_quantity_in * (
+    numerator: Decimal = base_asset_quantity * quote_asset_quantity * ONE_IN_PIPS
+    denominator: Decimal = base_asset_quantity * ONE_IN_PIPS + gross_base_quantity_in * (
         ONE_IN_PIPS - idex_fee_rate - pool_fee_rate
     )
 
@@ -202,7 +212,7 @@ def calculate_synthetic_price_levels(
 
     # Calculate price slippage per level respecting tick size
     price_slippage_per_level = adjust_price_to_tick_size(
-        int((pool_price * visible_slippage) / 100000),
+        int((Decimal(pool_price) * Decimal(visible_slippage)) / Decimal(100000)),
         tick_size,
     )
     # If the tick size is too large compared to the price to allow for the specified slippage,
@@ -216,7 +226,7 @@ def calculate_synthetic_price_levels(
     previous_bid_quantity_in_base = 0
 
     for level in range(1, visible_levels + 1):
-        ask_price = pool_price + level * price_slippage_per_level
+        ask_price = int(pool_price + Decimal(level * price_slippage_per_level))
 
         ask_quantity_in_base = quantities_available_from_pool_at_ask_price(
             base_asset_quantity,
@@ -233,7 +243,7 @@ def calculate_synthetic_price_levels(
                 "type": "pool",
             }
         )
-        bid_price = pool_price - level * price_slippage_per_level
+        bid_price = int(pool_price - Decimal(level * price_slippage_per_level))
         if bid_price > 0:
             bid_quantity_in_base = quantities_available_from_pool_at_bid_price(
                 base_asset_quantity,
@@ -444,8 +454,10 @@ def quantities_available_from_pool_at_ask_price(
     net_quote: int = int(
         (gross_quote * (ONE_IN_PIPS - idex_fee_rate - pool_fee_rate)) / ONE_IN_PIPS
     )
+
     base_out: int = base_asset_quantity - int(
-        (base_asset_quantity * quote_asset_quantity) / (quote_asset_quantity + net_quote)
+        (Decimal(base_asset_quantity) * Decimal(quote_asset_quantity))
+        / Decimal(quote_asset_quantity + net_quote)
     )
 
     # new pool balances, including the retained pool fee
@@ -559,7 +571,7 @@ def l1_best_available_buy_price(
 ) -> int:
     taker_minimum_in_quote_after_idex_fee = multiply_pips(
         taker_minimum_in_quote,
-        ONE_IN_PIPS - idex_fee_rate,
+        int(ONE_IN_PIPS - idex_fee_rate),
     )
     base_received = calculate_base_quantity_out(
         pool["base_reserve_quantity"],
@@ -588,7 +600,7 @@ def l1_best_available_sell_price(
 ) -> int:
     taker_minimum_in_base_after_idex_fee = multiply_pips(
         taker_minimum_in_base,
-        ONE_IN_PIPS - idex_fee_rate,
+        int(ONE_IN_PIPS - idex_fee_rate),
     )
     quote_received = calculate_quote_quantity_out(
         pool["base_reserve_quantity"],
@@ -670,9 +682,9 @@ def l1_l2_order_books_with_minimum_taker(
 
     l2_values: L2OrderBook = l2.copy()
     taker_minimum_in_base = int(
-        taker_minimum_in_quote
-        * l2["pool"]["base_reserve_quantity"]
-        / l2["pool"]["quote_reserve_quantity"]
+        Decimal(taker_minimum_in_quote)
+        * Decimal(l2["pool"]["base_reserve_quantity"])
+        / Decimal(l2["pool"]["quote_reserve_quantity"])
     )
 
     best_available_prices = l1_or_l2_best_available_prices(
@@ -797,9 +809,9 @@ def adjust_price_to_tick_size(
     specified rounding mode. Ex price 123456789 at tick size 1 is 123456789, at tick size 10
     123456780, at 100 123456700, etc
     """
-    significant_digits: float = price / tick_size
+    significant_digits: Decimal = Decimal(price) / Decimal(tick_size)
 
-    rounded_significant_digits: int = int(
-        Decimal(significant_digits).to_integral_value(rounding=rounding_mode)
+    rounded_significant_digits: Decimal = Decimal(significant_digits).to_integral_value(
+        rounding=rounding_mode
     )
-    return rounded_significant_digits * tick_size
+    return int(rounded_significant_digits * Decimal(tick_size))

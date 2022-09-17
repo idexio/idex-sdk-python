@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 from idex_sdk_python import pipmath as p
 
@@ -15,6 +16,8 @@ class TestPipmath(unittest.TestCase):
         self.assertEqual(p.decimal_to_pip("0.00000001"), 1)
         self.assertEqual(p.decimal_to_pip("0.000000009"), 0)
         self.assertEqual(p.decimal_to_pip("0.000000001"), 0)
+        self.assertEqual(p.decimal_to_pip("4382887.83017307"), 438288783017307)
+        self.assertEqual(p.decimal_to_pip("289139.11015652"), 28913911015652)
 
     def test_divide_pips(self) -> None:
         self.assertEqual(p.divide_pips(1, 0), 0)
@@ -32,8 +35,8 @@ class TestPipmath(unittest.TestCase):
         self.assertEqual(p.pip_to_decimal(10000000), "0.10000000")
 
     def test_square_root_big_int(self) -> None:
-        self.assertEqual(p.square_root_big_int(0), 0)
-        self.assertEqual(p.square_root_big_int(3), 1)
-        self.assertEqual(p.square_root_big_int(4), 2)
-        self.assertEqual(p.square_root_big_int(5), 2)
-        self.assertEqual(p.square_root_big_int(200), 14)
+        self.assertEqual(p.square_root_big_int(Decimal(0)), 0)
+        self.assertEqual(p.square_root_big_int(Decimal(3)), 1)
+        self.assertEqual(p.square_root_big_int(Decimal(4)), 2)
+        self.assertEqual(p.square_root_big_int(Decimal(5)), 2)
+        self.assertEqual(p.square_root_big_int(Decimal(200)), 14)

@@ -52,8 +52,8 @@ def l2_limit_order_book_to_hybrid_order_books(
         return {"l1": l2_to_l1_order_book(order_book), "l2": order_book}
 
     # need to make a deep copy of asks and bids because they will be modified
-    limit_asks_copy = list(map(lambda order: order.copy(), order_book["asks"]))
-    limit_bids_copy = list(map(lambda order: order.copy(), order_book["bids"]))
+    limit_asks_copy = list([order.copy() for order in order_book["asks"]])
+    limit_bids_copy = list([order.copy() for order in order_book["bids"]])
 
     adjusted_l2_order_book = recalculate_hybrid_level_amounts(
         {
