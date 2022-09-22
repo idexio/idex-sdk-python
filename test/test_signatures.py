@@ -1,8 +1,8 @@
 import unittest
 
-from idex_sdk_python import signatures as sig
-from idex_sdk_python.idex_types import enums
-from idex_sdk_python.idex_types.rest.request import (
+from idex_sdk import signatures as sig
+from idex_sdk.idex_types import enums
+from idex_sdk.idex_types.rest.request import (
     RestRequestAddLiquidity,
     RestRequestAssociateWallet,
     RestRequestCancelOrder,

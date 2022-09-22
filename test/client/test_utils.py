@@ -1,7 +1,7 @@
 import unittest
 
-from idex_sdk_python.client.utils import create_hmac_rest_request_signature_header
-from idex_sdk_python.constants import REST_HMAC_SIGNATURE_HEADER
+from idex_sdk.client.utils import create_hmac_rest_request_signature_header
+from idex_sdk.constants import REST_HMAC_SIGNATURE_HEADER
 
 
 class TestClientUtils(unittest.TestCase):

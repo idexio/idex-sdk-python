@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 
-from idex_sdk_python import pipmath as p
+from idex_sdk import pipmath as p
 
 
 class TestPipmath(unittest.TestCase):

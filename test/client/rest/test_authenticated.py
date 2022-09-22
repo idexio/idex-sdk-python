@@ -1,7 +1,7 @@
 import unittest
 
-from idex_sdk_python.client.rest.authenticated import RestAuthenticatedClient
-from idex_sdk_python.constants import REST_HMAC_SIGNATURE_HEADER
+from idex_sdk.client.rest.authenticated import RestAuthenticatedClient
+from idex_sdk.constants import REST_HMAC_SIGNATURE_HEADER
 
 
 class TestRestAuthenticatedClient(unittest.TestCase):

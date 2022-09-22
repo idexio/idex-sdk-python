@@ -2,9 +2,9 @@ import unittest
 from decimal import ROUND_DOWN, ROUND_HALF_UP, ROUND_UP
 from typing import List
 
-from idex_sdk_python.idex_types.order_book import L2OrderBook, OrderBookLevelL2
-from idex_sdk_python.order_book import quantities as q
-from idex_sdk_python.pipmath import ONE_IN_PIPS
+from idex_sdk.idex_types.order_book import L2OrderBook, OrderBookLevelL2
+from idex_sdk.order_book import quantities as q
+from idex_sdk.pipmath import ONE_IN_PIPS
 
 
 class TestOrderBookQuantities(unittest.TestCase):

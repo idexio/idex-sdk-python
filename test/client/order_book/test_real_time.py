@@ -4,7 +4,7 @@ import unittest
 from typing import Any
 from unittest.mock import MagicMock
 
-from idex_sdk_python.client.order_book.real_time import OrderBookRealTimeClient
+from idex_sdk.client.order_book.real_time import OrderBookRealTimeClient
 
 file_dir = os.path.dirname(os.path.abspath(__file__))
 
