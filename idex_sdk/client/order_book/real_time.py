@@ -86,7 +86,6 @@ class OrderBookRealTimeClient(AsyncIOEventEmitter):
             base_url=rest_api_url,
         )
         self.websocket_client = WebSocketClient(
-            api_key=api_key,
             should_reconnect_automatically=True,
             connect_timeout=connect_timeout,
             sandbox=sandbox,
