@@ -140,4 +140,4 @@ function for dispensing tokens.
 
 ## License
 
-The IDEX JavaScript SDK is released under the [MIT License](https://opensource.org/licenses/MIT).
+The IDEX Python SDK is released under the [MIT License](https://opensource.org/licenses/MIT).
