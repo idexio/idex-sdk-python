@@ -12,6 +12,7 @@ The official library for [IDEX v3's](https://idex.io) REST and WebSocket APIs, f
 
 Complete documentation for the IDEX v3 API is available at https://api-docs-v3.idex.io. 
 
+**The IDEX Python SDK is currently in beta.**
 ## Installation
 
 ```bash
@@ -138,6 +139,9 @@ Included in the `contracts/` directory contains the ABIs necessary for interacti
 - The [FaucetToken ABI](contracts/FaucetToken.abi.json) is implemented by the [API sandbox](https://api-docs-v3.idex.io/#sandbox) testnet tokens and features a [faucet](https://api-docs-v3.idex.io/#faucets)
 function for dispensing tokens.
 
+## Getting Help
+
+Please reach out in the [#developers Discord](https://discord.com/invite/UHAGGBz) for help, or [open an issue](https://github.com/idexio/idex-sdk-python/issues) to report bugs.
 ## License
 
 The IDEX Python SDK is released under the [MIT License](https://opensource.org/licenses/MIT).
