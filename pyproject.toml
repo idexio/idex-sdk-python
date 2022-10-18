@@ -4,9 +4,14 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "idex-sdk"
-version = "1.0.0b1"
+version = "1.0.0b2"
 description = "IDEX v3 SDK for Python"
+license = "MIT"
 authors = ["IDEX <support@idex.io>"]
+readme = "README.md"
+homepage = "https://idex.io/"
+repository = "https://github.com/idexio/idex-sdk-python"
+documentation = "https://api-docs-v3.idex.io/"
 packages = [{ include = "idex_sdk" }]
 
 [tool.poetry.dependencies]

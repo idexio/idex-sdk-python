@@ -1,4 +1,4 @@
-# <img src="assets/logo.png" alt="IDEX" height="37px" valign="top"> Python SDK
+# <img src="https://github.com/idexio/idex-sdk-python/raw/main/assets/logo.png" alt="IDEX" height="37px" valign="top"> Python SDK
 
 ![Discord](https://img.shields.io/discord/455246457465733130?label=Discord&style=flat-square)
 ![GitHub](https://img.shields.io/github/license/idexio/idex-sdk-js?style=flat-square)
